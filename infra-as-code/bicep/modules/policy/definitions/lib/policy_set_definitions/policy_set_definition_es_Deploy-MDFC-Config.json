@@ -5,12 +5,14 @@
   "scope": null,
   "properties": {
     "policyType": "Custom",
-    "displayName": "Deploy Microsoft Defender for Cloud configuration",
-    "description": "Deploy Microsoft Defender for Cloud configuration",
+    "displayName": "[Deprecated]: Deploy Microsoft Defender for Cloud configuration",
+    "description": "Deploy Microsoft Defender for Cloud configuration. Superseded by https://www.azadvertizer.net/azpolicyinitiativesadvertizer/Deploy-MDFC-Config_20240319.html",
     "metadata": {
-      "version": "3.1.1",
+      "version": "7.0.0-deprecated",
       "category": "Security Center",
       "source": "https://github.com/Azure/Enterprise-Scale/",
+      "deprecated": true,
+      "supersededBy": "Deploy-MDFC-Config_20240319",
       "alzCloudEnvironments": [
         "AzureCloud"
       ]
@@ -189,6 +191,54 @@
           "displayName": "Effect",
           "description": "Enable or disable the execution of the policy"
         }
+      },
+      "enableAscForServersVulnerabilityAssessments": {
+        "type": "String",
+        "allowedValues": [
+          "DeployIfNotExists",
+          "Disabled"
+        ],
+        "defaultValue": "DeployIfNotExists",
+        "metadata": {
+          "displayName": "Effect",
+          "description": "Enable or disable the execution of the policy"
+        }
+      },
+      "vulnerabilityAssessmentProvider": {
+        "type": "String",
+        "allowedValues": [
+          "default",
+          "mdeTvm"
+        ],
+        "defaultValue": "default",
+        "metadata": {
+          "displayName": "Vulnerability assessment provider type",
+          "description": "Select the vulnerability assessment solution to provision to machines."
+        }
+      },
+      "enableAscForApis": {
+        "type": "String",
+        "allowedValues": [
+          "DeployIfNotExists",
+          "Disabled"
+        ],
+        "defaultValue": "DeployIfNotExists",
+        "metadata": {
+          "displayName": "Effect",
+          "description": "Enable or disable the execution of the policy"
+        }
+      },
+      "enableAscForCspm": {
+        "type": "String",
+        "allowedValues": [
+          "DeployIfNotExists",
+          "Disabled"
+        ],
+        "defaultValue": "DeployIfNotExists",
+        "metadata": {
+          "displayName": "Effect",
+          "description": "Enable or disable the execution of the policy"
+        }
       }
     },
     "policyDefinitions": [
@@ -200,7 +250,8 @@
             "value": "[[parameters('enableAscForOssDb')]"
           }
         },
-        "groupNames": []
+        "groupNames": [],
+        "definitionVersion": ""
       },
       {
         "policyDefinitionReferenceId": "defenderForVM",
@@ -210,7 +261,22 @@
             "value": "[[parameters('enableAscForServers')]"
           }
         },
-        "groupNames": []
+        "groupNames": [],
+        "definitionVersion": ""
+      },
+      {
+        "policyDefinitionReferenceId": "defenderForVMVulnerabilityAssessment",
+        "policyDefinitionId": "/providers/Microsoft.Authorization/policyDefinitions/13ce0167-8ca6-4048-8e6b-f996402e3c1b",
+        "parameters": {
+          "effect": {
+            "value": "[[parameters('enableAscForServersVulnerabilityAssessments')]"
+          },
+          "vaType": {
+            "value": "[[parameters('vulnerabilityAssessmentProvider')]"
+          }
+        },
+        "groupNames": [],
+        "definitionVersion": ""
       },
       {
         "policyDefinitionReferenceId": "defenderForSqlServerVirtualMachines",
@@ -220,7 +286,8 @@
             "value": "[[parameters('enableAscForSqlOnVm')]"
           }
         },
-        "groupNames": []
+        "groupNames": [],
+        "definitionVersion": ""
       },
       {
         "policyDefinitionReferenceId": "defenderForAppServices",
@@ -230,17 +297,19 @@
             "value": "[[parameters('enableAscForAppServices')]"
           }
         },
-        "groupNames": []
+        "groupNames": [],
+        "definitionVersion": ""
       },
       {
-        "policyDefinitionReferenceId": "defenderForStorageAccounts",
-        "policyDefinitionId": "/providers/Microsoft.Authorization/policyDefinitions/74c30959-af11-47b3-9ed2-a26e03f427a3",
+        "policyDefinitionReferenceId": "defenderForStorageAccountsV2",
+        "policyDefinitionId": "/providers/Microsoft.Authorization/policyDefinitions/cfdc5972-75b3-4418-8ae1-7f5c36839390",
         "parameters": {
           "effect": {
             "value": "[[parameters('enableAscForStorage')]"
           }
         },
-        "groupNames": []
+        "groupNames": [],
+        "definitionVersion": ""
       },
       {
         "policyDefinitionReferenceId": "defenderforContainers",
@@ -250,17 +319,44 @@
             "value": "[[parameters('enableAscForContainers')]"
           }
         },
-        "groupNames": []
+        "groupNames": [],
+        "definitionVersion": ""
+      },
+      {
+        "policyDefinitionReferenceId": "defenderforKubernetes",
+        "policyDefinitionId": "/providers/Microsoft.Authorization/policyDefinitions/64def556-fbad-4622-930e-72d1d5589bf5",
+        "parameters": {
+          "effect": {
+            "value": "[[parameters('enableAscForContainers')]"
+          },
+          "logAnalyticsWorkspaceResourceId": {
+            "value": "[[parameters('logAnalytics')]"
+          }
+        },
+        "groupNames": [],
+        "definitionVersion": ""
+      },
+      {
+        "policyDefinitionReferenceId": "azurePolicyForKubernetes",
+        "policyDefinitionId": "/providers/Microsoft.Authorization/policyDefinitions/a8eff44f-8c92-45c3-a3fb-9880802d67a7",
+        "parameters": {
+          "effect": {
+            "value": "[[parameters('enableAscForContainers')]"
+          }
+        },
+        "groupNames": [],
+        "definitionVersion": ""
       },
       {
         "policyDefinitionReferenceId": "defenderForKeyVaults",
         "policyDefinitionId": "/providers/Microsoft.Authorization/policyDefinitions/1f725891-01c0-420a-9059-4fa46cb770b7",
         "parameters": {
-          "Effect": {
+          "effect": {
             "value": "[[parameters('enableAscForKeyVault')]"
           }
         },
-        "groupNames": []
+        "groupNames": [],
+        "definitionVersion": ""
       },
       {
         "policyDefinitionReferenceId": "defenderForDns",
@@ -270,7 +366,8 @@
             "value": "[[parameters('enableAscForDns')]"
           }
         },
-        "groupNames": []
+        "groupNames": [],
+        "definitionVersion": ""
       },
       {
         "policyDefinitionReferenceId": "defenderForArm",
@@ -280,7 +377,8 @@
             "value": "[[parameters('enableAscForArm')]"
           }
         },
-        "groupNames": []
+        "groupNames": [],
+        "definitionVersion": ""
       },
       {
         "policyDefinitionReferenceId": "defenderForSqlPaas",
@@ -290,7 +388,8 @@
             "value": "[[parameters('enableAscForSql')]"
           }
         },
-        "groupNames": []
+        "groupNames": [],
+        "definitionVersion": ""
       },
       {
         "policyDefinitionReferenceId": "defenderForCosmosDbs",
@@ -300,7 +399,30 @@
             "value": "[[parameters('enableAscForCosmosDbs')]"
           }
         },
-        "groupNames": []
+        "groupNames": [],
+        "definitionVersion": ""
+      },
+      {
+        "policyDefinitionReferenceId": "defenderForApis",
+        "policyDefinitionId": "/providers/Microsoft.Authorization/policyDefinitions/e54d2be9-5f2e-4d65-98e4-4f0e670b23d6",
+        "parameters": {
+          "effect": {
+            "value": "[[parameters('enableAscForApis')]"
+          }
+        },
+        "groupNames": [],
+        "definitionVersion": ""
+      },
+      {
+        "policyDefinitionReferenceId": "defenderForCspm",
+        "policyDefinitionId": "/providers/Microsoft.Authorization/policyDefinitions/689f7782-ef2c-4270-a6d0-7664869076bd",
+        "parameters": {
+          "effect": {
+            "value": "[[parameters('enableAscForCspm')]"
+          }
+        },
+        "groupNames": [],
+        "definitionVersion": ""
       },
       {
         "policyDefinitionReferenceId": "securityEmailContact",
@@ -313,7 +435,8 @@
             "value": "[[parameters('minimalSeverity')]"
           }
         },
-        "groupNames": []
+        "groupNames": [],
+        "definitionVersion": ""
       },
       {
         "policyDefinitionReferenceId": "ascExport",
@@ -329,7 +452,15 @@
             "value": "[[parameters('logAnalytics')]"
           }
         },
-        "groupNames": []
+        "groupNames": [],
+        "definitionVersion": ""
+      },
+      {
+        "policyDefinitionReferenceId": "migrateToMdeTvm",
+        "policyDefinitionId": "/providers/Microsoft.Authorization/policyDefinitions/766e621d-ba95-4e43-a6f2-e945db3d7888",
+        "parameters": {},
+        "groupNames": [],
+        "definitionVersion": ""
       }
     ],
     "policyDefinitionGroups": null

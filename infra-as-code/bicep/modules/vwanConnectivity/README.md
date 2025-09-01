@@ -17,19 +17,26 @@ Module deploys the following resources which can be configured by parameters:
 
 - [Parameters for Azure Commercial Cloud](generateddocs/vwanConnectivity.bicep.md)
 
-> **NOTE:** Although there are generated parameter markdowns for Azure Commercial Cloud, this same module can still be used in Azure China. Example parameter are in the [parameters](./parameters/) folder.
+> **NOTE:**
+>
+> - Within the `parVirtualWanHubs` parameter, the following keys (parVpnGatewayCustomName, parExpressRouteGatewayCustomName, parAzFirewallCustomName, and parVirtualWanHubCustomName) can be added to create custom names for the associated resources.
+>
+> - Although there are generated parameter markdowns for Azure Commercial Cloud, this same module can still be used in Azure China. Example parameter are in the [parameters](./parameters/) folder.
+>
+> - The file `parameters/vwanConnectivity.parameters.az.all.json` contains parameter values for SKUs that are compatible with availability zones for relevant resource types. In cases where you are deploying to a region that does not support availability zones, you should opt for the `parameters/vwanConnectivity.parameters.all.json` file.
+>
 
 <!-- markdownlint-disable -->
-> NOTE: When deploying using the `parameters/vwanConnectivity.parameters.all.json` you must update the `parPrivateDnsZones` parameter by replacing the `xxxxxx` placeholders with the deployment region. Failure to do so will cause these services to be unreachable over private endpoints.
+> - When deploying using the `parameters/vwanConnectivity.parameters.all.json` you must update the `parPrivateDnsZones` parameter by replacing the `xxxxxx` placeholders with the deployment region. Failure to do so will cause these services to be unreachable over private endpoints.
 > For example, if deploying to East US the following zone entries:
-> - `privatelink.xxxxxx.azmk8s.io`
-> - `privatelink.xxxxxx.backup.windowsazure.com`
-> - `privatelink.xxxxxx.batch.azure.com`
+>    - `privatelink.xxxxxx.azmk8s.io`
+>    - `privatelink.xxxxxx.backup.windowsazure.com`
+>    - `privatelink.xxxxxx.batch.azure.com`
 >
-> Will become:
-> - `privatelink.eastus.azmk8s.io`
-> - `privatelink.eastus.backup.windowsazure.com`
-> - `privatelink.eastus.batch.azure.com`
+>     Will become:
+>    - `privatelink.eastus.azmk8s.io`
+>    - `privatelink.eastus.backup.windowsazure.com`
+>    - `privatelink.eastus.batch.azure.com`
 <!-- markdownlint-restore -->
 
 ## Outputs
@@ -43,7 +50,8 @@ The module will generate the following outputs:
 | outVirtualHubName     | string | alz-vhub-eastus                                                                                                                                                                                          |
 | outVirtualHubId       | string | /subscriptions/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx/resourceGroups/alz-vwan-eastus/providers/Microsoft.Network/virtualHubs/alz-vhub-eastus                                                               |
 | outDdosPlanResourceId | string | /subscriptions/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx/resourceGroups/alz-vwan-eastus/providers/Microsoft.Network/ddosProtectionPlans/alz-ddos-plan                                                         |
-| outPrivateDnsZones    | array  | `["name": "privatelink.azurecr.io", "id": "/subscriptions/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx/resourceGroups/net-lz-spk-eastus-rg/providers/Microsoft.Network/privateDnsZones/privatelink.azurecr.io"]` |
+| outPrivateDnsZones        | array  | `[{"name":"privatelink.azurecr.io","id":"/subscriptions/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx/resourceGroups/net-lz-spk-eastus-rg/providers/Microsoft.Network/privateDnsZones/privatelink.azurecr.io"},{"name":"privatelink.azurewebsites.net","id":"/subscriptions/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx/resourceGroups/net-lz-spk-eastus-rg/providers/Microsoft.Network/privateDnsZones/privatelink.azurewebsites.net"}]` |
+| outPrivateDnsZonesNames  | array  | `["privatelink.azurecr.io", "privatelink.azurewebsites.net"]` |
 
 ## Deployment
 
@@ -57,6 +65,7 @@ In this example, the resources required for Virtual WAN connectivity will be dep
 > For the examples below we assume you have downloaded or cloned the Git repo as-is and are in the root of the repository as your selected directory in your terminal of choice.
 
 ### Azure CLI
+
 ```bash
 # For Azure global regions
 # Set Platform connectivity subscription ID as the the current subscription
@@ -79,7 +88,9 @@ az group create \
 
 az deployment group create --name ${NAME:0:63} --resource-group $GROUP --template-file $TEMPLATEFILE --parameters $PARAMETERS
 ```
+
 OR
+
 ```bash
 # For Azure China regions
 # Set Platform connectivity subscription ID as the the current subscription
@@ -117,7 +128,7 @@ $TopLevelMGPrefix = "alz"
 
 # Parameters necessary for deployment
 $inputObject = @{
-  DeploymentName        = 'alz-vwanConnectivityDeploy-{0}' -f (-join (Get-Date -Format 'yyyyMMddTHHMMssffffZ')[0..63])
+  DeploymentName        = -join ('alz-vwanConnectivityDeploy-{0}' -f (Get-Date -Format 'yyyyMMddTHHMMssffffZ'))[0..63]
   ResourceGroupName     = "rg-$TopLevelMGPrefix-vwan-001"
   TemplateFile          = "infra-as-code/bicep/modules/vwanConnectivity/vwanConnectivity.bicep"
   TemplateParameterFile = "infra-as-code/bicep/modules/vwanConnectivity/parameters/vwanConnectivity.parameters.all.json"
@@ -130,7 +141,9 @@ New-AzResourceGroup `
 
 New-AzResourceGroupDeployment @inputObject
 ```
+
 OR
+
 ```powershell
 # For Azure China regions
 # Set Platform connectivity subscription ID as the the current subscription
@@ -143,7 +156,7 @@ $TopLevelMGPrefix = "alz"
 
 # Parameters necessary for deployment
 $inputObject = @{
-  DeploymentName        = 'alz-vwanConnectivityDeploy-{0}' -f (-join (Get-Date -Format 'yyyyMMddTHHMMssffffZ')[0..63])
+  DeploymentName        = -join ('alz-vwanConnectivityDeploy-{0}' -f (Get-Date -Format 'yyyyMMddTHHMMssffffZ'))[0..63]
   ResourceGroupName     = "rg-$TopLevelMGPrefix-vwan-001"
   TemplateFile          = "infra-as-code/bicep/modules/vwanConnectivity/vwanConnectivity.bicep"
   TemplateParameterFile = "infra-as-code/bicep/modules/vwanConnectivity/parameters/mc-vwanConnectivity.parameters.all.json"
@@ -155,6 +168,7 @@ New-AzResourceGroup `
 
 New-AzResourceGroupDeployment @inputObject
   ```
+
 ## Example Output in Azure global regions
 
 ![Example Deployment Output](media/exampleDeploymentOutputConnectivity.png "Example Deployment Output in Azure global regions")
@@ -162,6 +176,7 @@ New-AzResourceGroupDeployment @inputObject
 ![Example Virtual WAN Deployment Output](media/exampleDeploymentOutput.png "Example Virtual WAN Deployment Output in Azure global regions")
 
 ## Example Output in Azure China regions
+
 ![Example Deployment Output](media/mc-exampleDeploymentOutputConnectivity.png "Example Deployment Output in Azure China")
 
 ![Example Virtual WAN Deployment Output](media/mc-exampleDeploymentOutput.png "Example Virtual WAN Deployment Output in Azure China")
@@ -169,3 +184,52 @@ New-AzResourceGroupDeployment @inputObject
 ## Bicep Visualizer
 
 ![Bicep Visualizer](media/bicepVisualizer.png "Bicep Visualizer")
+
+## Multi-region deployment
+
+To extend your infrastructure to [additional regions](https://learn.microsoft.com/azure/cloud-adoption-framework/ready/considerations/regions), this module can be used to deploy additional virtual hubs in multiple regions. This is achieved by adding multiple entries for the `parVirtualWanHubs` parameter for each region a virtual hub should be deployed.
+
+Example:
+
+```bicep
+parVirtualWanHubs: [
+    {
+        parVpnGatewayEnabled: true
+        parExpressRouteGatewayEnabled: true
+        parAzFirewallEnabled: true
+        parVirtualHubAddressPrefix: '10.100.0.0/23'
+        parHubLocation: 'eastus2'
+        parHubRoutingPreference: 'ExpressRoute'
+        parVirtualRouterAutoScaleConfiguration: 2
+        parVirtualHubRoutingIntentDestinations: []
+        parAzFirewallDnsProxyEnabled: true
+        parAzFirewallDnsServers: []
+        parAzFirewallIntelMode: 'Alert'
+        parAzFirewallTier: 'Standard'
+        parAzFirewallAvailabilityZones: [
+            '1'
+            '2'
+            '3'
+        ]
+    },
+    {
+        parVpnGatewayEnabled: true
+        parExpressRouteGatewayEnabled: true
+        parAzFirewallEnabled: true
+        parVirtualHubAddressPrefix: '10.90.0.0/23'
+        parHubLocation: 'centralus'
+        parHubRoutingPreference: 'ExpressRoute'
+        parVirtualRouterAutoScaleConfiguration: 2
+        parVirtualHubRoutingIntentDestinations: []
+        parAzFirewallDnsProxyEnabled: true
+        parAzFirewallDnsServers: []
+        parAzFirewallIntelMode: 'Alert'
+        parAzFirewallTier: 'Standard'
+        parAzFirewallAvailabilityZones: [
+            '1'
+            '2'
+            '3'
+        ]
+    }
+]
+```

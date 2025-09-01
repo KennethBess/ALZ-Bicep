@@ -5,12 +5,14 @@
   "scope": null,
   "properties": {
     "policyType": "Custom",
-    "displayName": "Deny or Deploy and append TLS requirements and SSL enforcement on resources without Encryption in transit",
-    "description": "Choose either Deploy if not exist and append in combination with audit or Select Deny in the Policy effect. Deny polices shift left. Deploy if not exist and append enforce but can be changed, and because missing exsistense condition require then the combination of Audit. ",
+    "displayName": "[Deprecated]: Deny or Deploy and append TLS requirements and SSL enforcement on resources without Encryption in transit",
+    "description": "Choose either Deploy if not exist and append in combination with audit or Select Deny in the Policy effect. Superseded by https://www.azadvertizer.net/azpolicyinitiativesadvertizer/Enforce-EncryptTransit_20240509.html",
     "metadata": {
-      "version": "1.0.0",
+      "version": "2.1.0-deprecated",
       "category": "Encryption",
       "source": "https://github.com/Azure/Enterprise-Scale/",
+      "deprecated": true,
+      "supersededBy": "Enforce-EncryptTransit_20240509",
       "alzCloudEnvironments": [
         "AzureCloud",
         "AzureChinaCloud",
@@ -54,18 +56,6 @@
           "displayName": "App Service. Select version minimum TLS Web App config",
           "description": "App Service. Select version  minimum TLS version for a  Web App config to enforce"
         }
-      },
-      "APIAppServiceLatestTlsEffect": {
-        "metadata": {
-          "displayName": "App Service API App. Latest TLS version should be used in your API App",
-          "description": "App Service API App. Only Audit, deny not possible as it is a related resource.  Upgrade to the latest TLS version."
-        },
-        "type": "String",
-        "defaultValue": "AuditIfNotExists",
-        "allowedValues": [
-          "AuditIfNotExists",
-          "Disabled"
-        ]
       },
       "APIAppServiceHttpsEffect": {
         "metadata": {
@@ -372,6 +362,19 @@
           "Deny",
           "Disabled"
         ]
+      },
+      "ContainerAppsHttpsOnlyEffect": {
+        "metadata": {
+          "displayName": "Container Apps should only be accessible over HTTPS",
+          "description": "Use of HTTPS ensures server/service authentication and protects data in transit from network layer eavesdropping attacks. Disabling 'allowInsecure' will result in the automatic redirection of requests from HTTP to HTTPS connections for container apps."
+        },
+        "type": "String",
+        "defaultValue": "Deny",
+        "allowedValues": [
+          "Audit",
+          "Deny",
+          "Disabled"
+        ]
       }
     },
     "policyDefinitions": [
@@ -383,7 +386,8 @@
             "value": "[[parameters('AppServiceHttpEffect')]"
           }
         },
-        "groupNames": []
+        "groupNames": [],
+        "definitionVersion": ""
       },
       {
         "policyDefinitionReferenceId": "AppServiceminTlsVersion",
@@ -396,17 +400,8 @@
             "value": "[[parameters('AppServiceminTlsVersion')]"
           }
         },
-        "groupNames": []
-      },
-      {
-        "policyDefinitionReferenceId": "APIAppServiceLatestTlsEffect",
-        "policyDefinitionId": "/providers/Microsoft.Authorization/policyDefinitions/8cb6aa8b-9e41-4f4e-aa25-089a7ac2581e",
-        "parameters": {
-          "effect": {
-            "value": "[[parameters('APIAppServiceLatestTlsEffect')]"
-          }
-        },
-        "groupNames": []
+        "groupNames": [],
+        "definitionVersion": ""
       },
       {
         "policyDefinitionReferenceId": "FunctionLatestTlsEffect",
@@ -416,7 +411,8 @@
             "value": "[[parameters('FunctionLatestTlsEffect')]"
           }
         },
-        "groupNames": []
+        "groupNames": [],
+        "definitionVersion": ""
       },
       {
         "policyDefinitionReferenceId": "WebAppServiceLatestTlsEffect",
@@ -426,7 +422,8 @@
             "value": "[[parameters('WebAppServiceLatestTlsEffect')]"
           }
         },
-        "groupNames": []
+        "groupNames": [],
+        "definitionVersion": ""
       },
       {
         "policyDefinitionReferenceId": "APIAppServiceHttpsEffect",
@@ -436,7 +433,8 @@
             "value": "[[parameters('APIAppServiceHttpsEffect')]"
           }
         },
-        "groupNames": []
+        "groupNames": [],
+        "definitionVersion": ""
       },
       {
         "policyDefinitionReferenceId": "FunctionServiceHttpsEffect",
@@ -446,7 +444,8 @@
             "value": "[[parameters('FunctionServiceHttpsEffect')]"
           }
         },
-        "groupNames": []
+        "groupNames": [],
+        "definitionVersion": ""
       },
       {
         "policyDefinitionReferenceId": "WebAppServiceHttpsEffect",
@@ -456,7 +455,8 @@
             "value": "[[parameters('WebAppServiceHttpsEffect')]"
           }
         },
-        "groupNames": []
+        "groupNames": [],
+        "definitionVersion": ""
       },
       {
         "policyDefinitionReferenceId": "AKSIngressHttpsOnlyEffect",
@@ -466,7 +466,8 @@
             "value": "[[parameters('AKSIngressHttpsOnlyEffect')]"
           }
         },
-        "groupNames": []
+        "groupNames": [],
+        "definitionVersion": ""
       },
       {
         "policyDefinitionReferenceId": "MySQLEnableSSLDeployEffect",
@@ -479,7 +480,8 @@
             "value": "[[parameters('MySQLminimalTlsVersion')]"
           }
         },
-        "groupNames": []
+        "groupNames": [],
+        "definitionVersion": ""
       },
       {
         "policyDefinitionReferenceId": "MySQLEnableSSLEffect",
@@ -492,7 +494,8 @@
             "value": "[[parameters('MySQLminimalTlsVersion')]"
           }
         },
-        "groupNames": []
+        "groupNames": [],
+        "definitionVersion": ""
       },
       {
         "policyDefinitionReferenceId": "PostgreSQLEnableSSLDeployEffect",
@@ -505,7 +508,8 @@
             "value": "[[parameters('PostgreSQLminimalTlsVersion')]"
           }
         },
-        "groupNames": []
+        "groupNames": [],
+        "definitionVersion": ""
       },
       {
         "policyDefinitionReferenceId": "PostgreSQLEnableSSLEffect",
@@ -518,7 +522,8 @@
             "value": "[[parameters('PostgreSQLminimalTlsVersion')]"
           }
         },
-        "groupNames": []
+        "groupNames": [],
+        "definitionVersion": ""
       },
       {
         "policyDefinitionReferenceId": "RedisTLSDeployEffect",
@@ -531,7 +536,8 @@
             "value": "[[parameters('RedisMinTlsVersion')]"
           }
         },
-        "groupNames": []
+        "groupNames": [],
+        "definitionVersion": ""
       },
       {
         "policyDefinitionReferenceId": "RedisdisableNonSslPort",
@@ -541,7 +547,8 @@
             "value": "[[parameters('RedisTLSDeployEffect')]"
           }
         },
-        "groupNames": []
+        "groupNames": [],
+        "definitionVersion": ""
       },
       {
         "policyDefinitionReferenceId": "RedisDenyhttps",
@@ -554,7 +561,8 @@
             "value": "[[parameters('RedisMinTlsVersion')]"
           }
         },
-        "groupNames": []
+        "groupNames": [],
+        "definitionVersion": ""
       },
       {
         "policyDefinitionReferenceId": "SQLManagedInstanceTLSDeployEffect",
@@ -567,7 +575,8 @@
             "value": "[[parameters('SQLManagedInstanceMinTlsVersion')]"
           }
         },
-        "groupNames": []
+        "groupNames": [],
+        "definitionVersion": ""
       },
       {
         "policyDefinitionReferenceId": "SQLManagedInstanceTLSEffect",
@@ -580,7 +589,8 @@
             "value": "[[parameters('SQLManagedInstanceMinTlsVersion')]"
           }
         },
-        "groupNames": []
+        "groupNames": [],
+        "definitionVersion": ""
       },
       {
         "policyDefinitionReferenceId": "SQLServerTLSDeployEffect",
@@ -593,7 +603,8 @@
             "value": "[[parameters('SQLServerminTlsVersion')]"
           }
         },
-        "groupNames": []
+        "groupNames": [],
+        "definitionVersion": ""
       },
       {
         "policyDefinitionReferenceId": "SQLServerTLSEffect",
@@ -606,7 +617,8 @@
             "value": "[[parameters('SQLServerminTlsVersion')]"
           }
         },
-        "groupNames": []
+        "groupNames": [],
+        "definitionVersion": ""
       },
       {
         "policyDefinitionReferenceId": "StorageHttpsEnabledEffect",
@@ -619,7 +631,8 @@
             "value": "[[parameters('StorageMinimumTlsVersion')]"
           }
         },
-        "groupNames": []
+        "groupNames": [],
+        "definitionVersion": ""
       },
       {
         "policyDefinitionReferenceId": "StorageDeployHttpsEnabledEffect",
@@ -632,7 +645,19 @@
             "value": "[[parameters('StorageMinimumTlsVersion')]"
           }
         },
-        "groupNames": []
+        "groupNames": [],
+        "definitionVersion": ""
+      },
+      {
+        "policyDefinitionReferenceId": "ContainerAppsHttpsOnlyEffect",
+        "policyDefinitionId": "/providers/Microsoft.Authorization/policyDefinitions/0e80e269-43a4-4ae9-b5bc-178126b8a5cb",
+        "parameters": {
+          "effect": {
+            "value": "[[parameters('ContainerAppsHttpsOnlyEffect')]"
+          }
+        },
+        "groupNames": [],
+        "definitionVersion": ""
       }
     ],
     "policyDefinitionGroups": null
